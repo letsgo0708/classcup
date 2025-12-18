@@ -552,8 +552,8 @@ function TopNav() {
       <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between px-4 py-4 md:px-10">
         <div className="flex min-w-0 items-center gap-4 md:gap-8">
           <Link to="/" className="flex items-center gap-3">
-            <div className="h-8 w-8 text-[#36e27b]">
-              <IconCube />
+            <div className="h-8 w-8 text-white/90">
+              <IconSoccerBall />
             </div>
             <div className="text-xl font-bold tracking-tight">
               <span className="text-[#36e27b]">Y</span>oung
@@ -1463,9 +1463,7 @@ function AdminPage({ data, actions }) {
               </div>
 
               <div className="mt-3 text-xs text-white/45">
-                goals 합계(참고): {sumGoals(getGoalsByMatch(goals, m.id), "home")} : {sumGoals(getGoalsByMatch(goals, m.id), "away")}
-                {" · "}
-                <Link to={`/match/${m.id}`} className="text-white underline underline-offset-4 hover:text-[#36e27b]">상세</Link>
+                골 합계(참고): {sumGoals(getGoalsByMatch(goals, m.id), "home")} : {sumGoals(getGoalsByMatch(goals, m.id), "away")}
               </div>
             </div>
           ))}
@@ -1774,23 +1772,34 @@ function AdminGuard({ children }) {
 // ------------------------
 // 5) Icons (inline SVG)
 // ------------------------
-function IconCube() {
+
+function IconSoccerBall({ className = "" }) {
   return (
-    <svg viewBox="0 0 48 48" className="h-full w-full fill-current">
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z"
-        fillOpacity="0.8"
-      />
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z"
-      />
+    <svg
+      viewBox="0 0 64 64"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"          // 🔽 내부 선 인식 좋아지는 핵심
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {/* outer circle */}
+      <circle cx="32" cy="32" r="28" />
+
+      {/* center pentagon */}
+      <polygon points="32 18 40 24 37 34 27 34 24 24" />
+
+      {/* radial lines */}
+      <line x1="32" y1="18" x2="32" y2="6" />
+      <line x1="24" y1="24" x2="12" y2="20" />
+      <line x1="40" y1="24" x2="52" y2="20" />
+      <line x1="27" y1="34" x2="18" y2="46" />
+      <line x1="37" y1="34" x2="46" y2="46" />
     </svg>
   )
 }
+
 
 function IconHistory({ className = "" }) {
   return (
