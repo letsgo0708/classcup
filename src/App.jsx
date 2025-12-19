@@ -327,11 +327,13 @@ export default function App() {
   }, [matchesDraft, goalsDraft, matches, goals])
 
   const nextMatch = useMemo(() => {
-    const upcoming = matches
-      .filter((m) => m.status !== "종료")
-      .sort((a, b) => parseDT(a.datetime) - parseDT(b.datetime))
-    return upcoming[0] || null
+    return (
+      [...matches]
+        .filter((m) => m.status !== "종료")
+        .sort((a, b) => (a.match_no ?? 9999) - (b.match_no ?? 9999))[0] || null
+    )
   }, [matches])
+
 
   const scorerRanking = useMemo(() => buildScorerRanking(players, goals), [players, goals])
   const predictionRanking = useMemo(() => buildPredictionRanking(predictions, matches), [predictions, matches])
@@ -959,7 +961,9 @@ function TeamBadge({ label }) {
 
 function OverviewPage({ data }) {
   const { matches } = data
-  const byTime = [...matches].sort((a, b) => parseDT(a.datetime) - parseDT(b.datetime))
+  const byTime = useMemo(() => {
+    return [...matches].sort((a, b) => a.match_no - b.match_no)
+  }, [matches])
 
   return (
     <div className="mx-auto w-full max-w-[900px] space-y-4 px-4 pb-24 pt-6">
@@ -1251,7 +1255,7 @@ function MatchPage({ data, actions }) {
       <Card className="p-5">
         <div className="mb-2 flex items-end justify-between gap-3">
           <div className="text-base font-black">승부예측</div>
-          <div className="text-xs text-white/50">{canSubmit ? "경기 시작 전까지 제출 가능" : "경기 시작 이후입니다"}</div>
+          <div className="text-xs text-white/50">{canSubmit ? "경기 시작 전까지 제출 가능" : "경기 시작 이후 입니다"}</div>
         </div>
 
         <div className="mb-3 text-sm text-white/60">
