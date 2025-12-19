@@ -15,7 +15,11 @@ function parseDT(s) {
 }
 
 function fmtDT(s) {
+  if (!s) return "경기 일정이 아직 확정되지 않았습니다" // ✅ null/undefined/"" 처리
+
   const d = parseDT(s)
+  if (!Number.isFinite(d.getTime())) return "경기 일정이 아직 확정되지 않았습니다" // ✅ 이상값 방어
+
   const pad = (n) => String(n).padStart(2, "0")
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
@@ -607,14 +611,32 @@ function HomePage({ data }) {
   }, [matches])
 
   const dday = useMemo(() => {
-    if (!nextMatch) return null
-    const ms = parseDT(nextMatch.datetime).getTime() - Date.now()
+    if (!nextMatch?.datetime) return null // ✅ null이면 D-?로
+
+    const t = parseDT(nextMatch.datetime).getTime()
+    if (!Number.isFinite(t)) return null  // ✅ Invalid Date 방어
+
+    const ms = t - Date.now()
     const days = Math.ceil(ms / (1000 * 60 * 60 * 24))
-    return Number.isFinite(days) ? days : null
+
+    // ✅ 이미 지난 경기거나 이상값이면 D-?로 처리(원하면 조건 조절)
+    if (!Number.isFinite(days) || days < 0) return null
+
+    return days
   }, [nextMatch])
+
 
   const timeLine = useMemo(() => {
     if (!nextMatch) return { line1: "예정 경기가 없습니다", line2: "" }
+
+    // ✅ datetime이 null/undefined/빈문자열이면 안내문구
+    if (!nextMatch.datetime) {
+      return {
+        line1: "경기 일정이 아직 확정되지 않았습니다",
+        line2: nextMatch.location || "운동장",
+      }
+    }
+
     const d = parseDT(nextMatch.datetime)
     const pad = (n) => String(n).padStart(2, "0")
     const dayNames = ["일", "월", "화", "수", "목", "금", "토"]
@@ -701,7 +723,7 @@ function HomePage({ data }) {
               <div className="flex items-center justify-center gap-4 rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm sm:gap-8">
                 <TeamLogoCard title={nextMatch?.home_team || "Tigers"} sub="홈" />
                 <div className="flex flex-col items-center justify-center">
-                  <span className="text-3xl font-black italic text-white/20">VS</span>
+                  <span className="text-3xl font-black text-white/20">VS</span>
                   {dday != null ? (
                     <div className="mt-2 rounded border border-red-500/30 bg-red-500/20 px-3 py-1 text-xs font-black text-red-300">
                       D-{dday}
@@ -965,7 +987,7 @@ function OverviewPage({ data }) {
                 <div className="mt-1 text-sm text-white/80">
                   {m.home_team} <span className="text-white/50">vs</span> {m.away_team}
                 </div>
-                <div className="mt-1 text-sm text-white/80">{fmtDT(m.datetime)}</div>
+                <div className="mt-1 text-sm font-bold text-[#36e27b]/85">{fmtDT(m.datetime)}</div>
               </Link>
             </li>
           ))}
