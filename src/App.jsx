@@ -15,14 +15,19 @@ function parseDT(s) {
 }
 
 function fmtDT(s) {
-  if (!s) return "경기 일정이 아직 확정되지 않았습니다" // ✅ null/undefined/"" 처리
+  if (!s) return "일정 미정"
 
-  const d = parseDT(s)
-  if (!Number.isFinite(d.getTime())) return "경기 일정이 아직 확정되지 않았습니다" // ✅ 이상값 방어
+  const d = new Date(s)
+  if (!Number.isFinite(d.getTime())) return "일정 미정"
 
   const pad = (n) => String(n).padStart(2, "0")
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+  const dayNames = ["일", "월", "화", "수", "목", "금", "토"]
+  const day = dayNames[d.getDay()]
+
+  // 12/22(월) 15:10
+  return `${pad(d.getMonth() + 1)}/${pad(d.getDate())}(${day}) ${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
+
 
 function isBeforeKickoff(match) {
   const dt = match?.datetime
@@ -997,7 +1002,30 @@ function OverviewPage({ data }) {
                 <div className="mt-1 text-sm text-white/80">
                   {m.home_team} <span className="text-white/50">vs</span> {m.away_team}
                 </div>
-                <div className="mt-1 text-sm font-bold text-[#36e27b]/85">{fmtDT(m.datetime)}</div>
+                <div className="mt-1 text-sm font-bold text-[#36e27b]/85">
+                  {fmtDT(m.datetime)}
+                </div>
+
+                <div className="mt-2 flex flex-wrap items-center gap-1 text-xs">
+                  <span className="font-bold text-sky-300">심판</span>
+                  <span className="text-sky-400/60">·</span>
+
+                  {m.referee ? (
+                    m.referee.split(" ").map((name, i) => (
+                      <span
+                        key={i}
+                        className="rounded-full border border-sky-400/30 bg-sky-400/10 px-2 py-0.5 font-medium text-sky-200"
+                      >
+                        {name}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-white/40">미정</span>
+                  )}
+                </div>
+
+
+
               </Link>
             </li>
           ))}
