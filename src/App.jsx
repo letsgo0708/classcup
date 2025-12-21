@@ -25,7 +25,13 @@ function fmtDT(s) {
 }
 
 function isBeforeKickoff(match) {
-  return Date.now() < parseDT(match.datetime).getTime()
+  const dt = match?.datetime
+  if (!dt) return true // ✅ 일정 미정이면 '아직 시작 전'으로 간주(제출 가능)
+
+  const t = new Date(dt).getTime()
+  if (!Number.isFinite(t)) return true // ✅ 이상값도 미정 취급(원하면 false로 해도 됨)
+
+  return Date.now() < t
 }
 
 function getGoalsByMatch(goals, matchId) {
@@ -1369,7 +1375,7 @@ function MatchPage({ data, actions }) {
                     <span className="font-black text-white">{p.away_score}</span>
                     {" "}{" "}{match.away_team}
                   </div>
-                  <div className="mt-2 text-sm text-white/85">{p.comment || "(관전평 없음)"}</div>
+                  <div className="mt-2 text-sm text-white/85">{p.comment || ""}</div>
                 </li>
               )
             })}
