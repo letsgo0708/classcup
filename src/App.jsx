@@ -960,7 +960,7 @@ function TeamLogoCard({ title, sub, dim = false }) {
 }
 
 function TeamBadge({ label }) {
-  const s = (label || "?").slice(0, 1).toUpperCase()
+  const s = (label || "?").slice(0, 2).toUpperCase()
   return (
     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10">
       <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-sm font-black text-white">
