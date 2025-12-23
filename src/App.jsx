@@ -670,9 +670,8 @@ function HomePage({ data }) {
   }
 
   const TopPredRows = predictionRanking.slice(0, 3).map((r) => {
-    const acc = Math.round((r.hits / r.total) * 100)
     const initials = (r.writer_name || "?").slice(0, 2).toUpperCase()
-    return { ...r, acc, initials }
+    return { ...r, initials }
   })
 
   return (
@@ -922,7 +921,7 @@ function HomePage({ data }) {
                         ? "rounded bg-[#36e27b]/10 px-2 py-1 text-[#36e27b]"
                         : "text-white/50"
                     )}>
-                      {r.acc}% 적중
+                      {r.hits}회 적중
                     </div>
                   </div>
                 ))
